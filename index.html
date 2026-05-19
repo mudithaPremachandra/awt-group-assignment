@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inventory UI</title>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --primary: #2563eb;
+      --primary-hover: #1e40af;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --border: #e2e8f0;
+      --ok: #16a34a;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    .container {
+      max-width: 920px;
+      margin: 32px auto;
+      padding: 0 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    h1, h2 {
+      margin-top: 0;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 18px;
+      letter-spacing: 0.2px;
+    }
+
+    h2 {
+      font-size: 20px;
+      margin-bottom: 14px;
+    }
+
+    h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    input {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      min-width: 170px;
+      font-size: 14px;
+      background: #fff;
+      color: var(--text);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #93c5fd;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+    }
+
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 10px;
+      background: var(--primary);
+      color: #fff;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: transform 0.15s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.22);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    button:hover {
+      background: var(--primary-hover);
+    }
+
+    button.danger {
+      background: var(--danger);
+      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.2);
+    }
+
+    button.danger:hover {
+      background: var(--danger-hover);
+    }
+
+    .status {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .status.ok {
+      color: var(--ok);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    th, td {
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      padding: 12px 10px;
+      vertical-align: middle;
+    }
+
+    th {
+      background: #f8fafc;
+      color: #334155;
+      font-size: 13px;
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover td {
+      background: #f8fbff;
+    }
+
+    .header-row {
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .inline-status {
+      margin: 0;
+      padding: 6px 10px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 12px;
+      color: #334155;
+    }
+
+    .nested-card {
+      padding: 14px;
+      margin-top: 14px;
+      box-shadow: none;
+      border-style: dashed;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 12px;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Inventory Management</h1>
+
+    <div id="loginCard" class="card">
+      <h2>Login</h2>
+      <div class="row">
+        <input id="username" type="text" placeholder="Username" />
+        <input id="password" type="password" placeholder="Password" />
+        <button id="loginBtn">Login</button>
+      </div>
+      <div id="loginStatus" class="status"></div>
+    </div>
+
+    <div id="appCard" class="card hidden">
+      <div class="row header-row">
+        <h2 style="margin: 0;">Products</h2>
+        <div class="row">
+          <span id="userInfo" class="status inline-status"></span>
+          <button id="logoutBtn" class="danger">Logout</button>
+        </div>
+      </div>
+
+      <div id="adminControls" class="card nested-card hidden">
+        <h3 style="margin-top: 0;">Add Product (Admin)</h3>
+        <div class="row">
+          <input id="productName" type="text" placeholder="Product name" />
+          <input id="productPrice" type="number" step="0.01" placeholder="Price" />
+          <button id="addBtn">Add</button>
+        </div>
+      </div>
+
+      <div id="appStatus" class="status"></div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Price</th>
+              <th id="actionHeader" class="hidden">Action</th>
+            </tr>
+          </thead>
+          <tbody id="productsBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const state = {
+      token: localStorage.getItem("token") || "",
+      role: localStorage.getItem("role") || ""
+    };
+
+    const loginCard = document.getElementById("loginCard");
+    const appCard = document.getElementById("appCard");
+    const adminControls = document.getElementById("adminControls");
+    const actionHeader = document.getElementById("actionHeader");
+    const productsBody = document.getElementById("productsBody");
+    const userInfo = document.getElementById("userInfo");
+
+    const loginStatus = document.getElementById("loginStatus");
+    const appStatus = document.getElementById("appStatus");
+
+    async function api(url, method = "GET", body = null) {
+      const options = {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": state.token
+        }
+      };
+      if (body) options.body = JSON.stringify(body);
+      const res = await fetch(url, options);
+      return res.json();
+    }
+
+    function setStatus(el, text, isOk = false) {
+      el.textContent = text || "";
+      el.className = isOk ? "status ok" : "status";
+    }
+
+    function renderProducts(items) {
+      productsBody.innerHTML = "";
+
+      items.forEach((p) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${p.id}</td>
+          <td>${p.name}</td>
+          <td>${p.price}</td>
+          ${state.role === "admin" ? `<td><button class="danger" data-id="${p.id}">Delete</button></td>` : ""}
+        `;
+        productsBody.appendChild(tr);
+      });
+
+      if (state.role === "admin") {
+        document.querySelectorAll("button[data-id]").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            const id = btn.getAttribute("data-id");
+            const res = await api("delete_product.php", "POST", { id });
+            setStatus(appStatus, res.status || "Deleted", true);
+            loadProducts();
+          });
+        });
+      }
+    }
+
+    async function loadProducts() {
+      const data = await api("get_products.php");
+      if (Array.isArray(data)) {
+        renderProducts(data);
+        setStatus(appStatus, "Products loaded", true);
+      } else {
+        setStatus(appStatus, data.status || "Failed to load products");
+      }
+    }
+
+    function applyRoleUI() {
+      const isAdmin = state.role === "admin";
+      adminControls.classList.toggle("hidden", !isAdmin);
+      actionHeader.classList.toggle("hidden", !isAdmin);
+      userInfo.textContent = state.role ? `Logged in as: ${state.role}` : "";
+    }
+
+    function showApp() {
+      loginCard.classList.add("hidden");
+      appCard.classList.remove("hidden");
+      applyRoleUI();
+      loadProducts();
+    }
+
+    function showLogin() {
+      appCard.classList.add("hidden");
+      loginCard.classList.remove("hidden");
+      productsBody.innerHTML = "";
+      setStatus(appStatus, "");
+    }
+
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!username || !password) {
+        setStatus(loginStatus, "Username and password are required");
+        return;
+      }
+
+      const res = await api("login.php", "POST", { username, password });
+      if (res.status === "success") {
+        state.token = res.token;
+        state.role = res.role;
+        localStorage.setItem("token", state.token);
+        localStorage.setItem("role", state.role);
+        setStatus(loginStatus, "Login successful", true);
+        showApp();
+      } else {
+        setStatus(loginStatus, "Invalid credentials");
+      }
+    });
+
+    document.getElementById("addBtn").addEventListener("click", async () => {
+      const name = document.getElementById("productName").value.trim();
+      const price = document.getElementById("productPrice").value.trim();
+
+      if (!name || !price) {
+        setStatus(appStatus, "Name and price are required");
+        return;
+      }
+
+      const res = await api("add_product.php", "POST", { name, price });
+      setStatus(appStatus, res.status || "Product added", true);
+      document.getElementById("productName").value = "";
+      document.getElementById("productPrice").value = "";
+      loadProducts();
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      state.token = "";
+      state.role = "";
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+      setStatus(loginStatus, "Logged out", true);
+      showLogin();
+    });
+
+    if (state.token) {
+      showApp();
+    }
+  </script>
+</body>
+</html>
